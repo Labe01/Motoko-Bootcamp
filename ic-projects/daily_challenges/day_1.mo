@@ -1,7 +1,8 @@
 
 import Array "mo:base/Array";
 import Debug "mo:base/Debug";
-
+import Iter "mo:base/Iter";
+import NatLib "mo:base/Nat";
 
 
 
@@ -60,12 +61,6 @@ actor Day1 {
     };
 
 
-    public func sum_of_array(array:[Nat]): async Nat{
-        var array_sum:Nat = 0;
-        array_sum:=array.fold
-    return array_sum;
-    };
-
 // Challenge 8
     public func maximum(array:[Nat]): async Nat{
         var array_max:Nat = 0;
@@ -78,11 +73,9 @@ actor Day1 {
     };
 
     
-    // Challenge 9
+// Challenge 9
     public func remove_from_array(array : [Nat], n : Nat) : async [Nat] {
-        return Array.filter(array, func (_n : Nat) : Bool {
-            _n != n;
-        });
+        return Array.filter<Nat>(array, func (_n : Nat) : Bool {_n != n;});
     };
 
 // Challenge 10
@@ -108,56 +101,39 @@ actor Day1 {
     };
 
 
-    public func test(array:[Nat], idx1:Nat, idx2:Nat): async [Nat]{
-        
-        var mut_array:[var Nat]= Array.thaw(array);
-        swap_arr_index(mut_array, idx1, idx2);
-
-        var imu_array:[Nat] = Array.freeze(mut_array);
-
-        return imu_array;
-
-    };
-
-
-
     public func selection_sort(array:[Nat]): async [Nat]{
         
-        for (values in Array.vals(array)) {
-            Debug.print(NatLib.toText(values))
-        };
-
-
         //Define array's size
         var array_size:Nat = arr_size(array);
         //Create a mutable copy of the array
         var mut_array:[var Nat]= Array.thaw(array);
 
         //Working variables
-        var exitFunc:Bool = false;
-
-            var current_val:Nat = 0;
             var min_val_idx:Nat = 0;
             var min_val:Nat = 0;
-            var current_idx:Nat=0;
+            var lower_value_found:Bool = false;
             var it:Nat=0;
 
-        while(it <= array_size){
-            
+        while(it < array_size){
+
+            min_val:=mut_array[it];
+
+            //Get id of the minimum value lower that start value
             for(i in Iter.range(it, array_size)){
                 
-                min_val:=mut_array[i];
-
                 if(mut_array[i] < min_val){
-                    min_val_idx:=mut_array[i];
+                    min_val:= mut_array[i];
+                    min_val_idx:= i;
+                    lower_value_found:= true;
                 };
             };
 
-            //Debug.print(NatLib.toText(it));
-            //Debug.print(NatLib.toText(min_val_idx));
+            if(lower_value_found){
+              swap_arr_index(mut_array, it, min_val_idx);
+            };
 
-            swap_arr_index(mut_array, it, min_val_idx);
             it+=1;
+            lower_value_found:= false;
 
         };
         
